@@ -1,8 +1,538 @@
-<section class="horizontal-form">
+{{#accordion-list showExpandAll=false as | al expandFn |}}
+{{#accordion-list-item
+     title=(t "clusterNew.amazoneks.access.title")
+     detail=(t "clusterNew.amazoneks.access.detail")
+     expandAll=expandAll
+     expand=(action expandFn)
+     expandOnInit=true
+  }}
+<div class="row">
+    <div class="col span-3">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.region.label"}}
+        </label>
+        {{#if (and (eq mode "new") (eq step 1))}}
+        <select class="form-control" onchange={{action (mut cluster.eksEngineConfig.region) value="target.value"}}>
+            {{#each regionChoices as |choice|}}
+            <option value={{choice}} selected={{eq cluster.eksEngineConfig.region choice}}>{{choice}}</option>
+            {{/each}}
+        </select>
+        {{else}}
+        <div>{{cluster.eksEngineConfig.region}}</div>
+        {{/if}}
+    </div>
 
-    {{!-- This component shows errors produced by validate() in the component --}}
-    {{top-errors errors=errors}}
+    <div class="col span-3">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.accessKey.label"}}
+        </label>
+        {{#if (eq step 1)}}
+        {{input
+            type="text"
+            name="username"
+            classNames="form-control"
+            placeholder=(t "nodeDriver.amazoneks.accessKey.placeholder")
+            value=cluster.eksEngineConfig.accessKey
+          }}
+        {{else}}
+        <div>{{cluster.eksEngineConfig.accessKey}}</div>
+        {{/if}}
+    </div>
 
-    {{!-- This component shows the Create and Cancel buttons --}}
-    {{save-cancel save="save" cancel="cancel"}}
-</section>
+    <div class="col span-3">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.secretKey.label"}}
+        </label>
+        {{#if (eq step 1)}}
+        {{input
+            type="password"
+            name="password"
+            classNames="form-control"
+            placeholder=(t "nodeDriver.amazoneks.secretKey.placeholder")
+            value=cluster.eksEngineConfig.secretKey
+          }}
+        {{else}}
+        <div class="text-muted text-italic">{{t "nodeDriver.amazoneks.secretKey.provided"}}</div>
+        {{/if}}
+    </div>
+
+    <div class="col span-3">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.sessionToken.label" htmlSafe=true}}
+        </label>
+        {{#if (eq step 1)}}
+        {{input
+            type="password"
+            name="session-token"
+            classNames="form-control"
+            placeholder=(t "nodeDriver.amazoneks.sessionToken.placeholder")
+            value=cluster.eksEngineConfig.sessionToken
+          }}
+        {{else}}
+        <div class="text-muted text-italic">{{t "nodeDriver.amazoneks.sessionToken.provided"}}</div>
+        {{/if}}
+    </div>
+</div>
+
+{{#if (eq step 1)}}
+<div class="row">
+    <div class="span-9 offset-3">
+        <p class="text-info text-small m-0">{{t "nodeDriver.amazoneks.access.help"}}</p>
+    </div>
+</div>
+{{/if}}
+{{/accordion-list-item}}
+
+{{#if (eq step 1)}}
+{{save-cancel
+      editing=(eq mode "edit")
+      save=(action "awsLogin")
+      cancel=close
+      createLabel="nodeDriver.amazoneks.access.next"
+      savingLabel="nodeDriver.amazoneks.access.loading"
+    }}
+{{/if}}
+
+{{#if (gte step 2)}}
+{{#accordion-list-item
+       title=(t "nodeDriver.amazoneks.clusterOption.title")
+       detail=(t "nodeDriver.amazoneks.clusterOption.detail")
+       showExpand=false
+       expandOnInit=true
+       expandAll=al.expandAll
+       expand=(action expandFn)
+    }}
+<div class="row">
+    <div class="col span-6">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.kubernetesVersion.label"}}
+        </label>
+        {{new-select
+            classNames="form-control"
+            content=versionChoices
+            value=cluster.eksEngineConfig.kubernetesVersion
+          }}
+        {{#if editing}}
+        <!--p class="help-block">{{t "formVersions.eks.helpBlock"}}</p-->
+        {{/if}}
+    </div>
+    <div class="col span-6">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.role.label"}}
+        </label>
+        {{#if (eq step 2)}}
+        <div class="radio pt-0">
+            <label>
+                {{radio-button
+                  selection=serviceRoleMode
+                  value="default"
+                  disabled=editing
+                }}
+                {{t "nodeDriver.amazoneks.role.radio.default"}}
+            </label>
+            <label>
+                {{radio-button
+                  selection=serviceRoleMode
+                  value="custom"
+                  disabled=editing
+                }}
+                {{t "nodeDriver.amazoneks.role.radio.custom"}}
+            </label>
+        </div>
+        {{#unless (eq serviceRoleMode "default")}}
+        <NewSelect class="form-control" @value={{ selectedServiceRole }} @content={{ serviceRoles }}
+            @optionValuePath="RoleName" @optionLabelPath="RoleName" />
+        {{/unless}}
+        {{else}}
+        <div>
+            {{#if cluster.eksEngineConfig.serviceRole}}
+            {{readableServiceRole}}
+            {{else}}
+            {{t "nodeDriver.amazoneks.role.noneSelected"}}
+            {{/if}}
+        </div>
+        {{/if}}
+    </div>
+</div>
+{{/accordion-list-item}}
+
+{{#if (eq step 2)}}
+{{save-cancel
+        editing=(eq mode "edit")
+        save=(action "loadVPS")
+        cancel=close
+        createLabel="nodeDriver.amazoneks.role.next"
+        savingLabel="nodeDriver.amazoneks.role.loading"
+      }}
+{{/if}}
+{{/if}}
+
+{{#if (gte step 3)}}
+{{#accordion-list-item
+       title=(t "nodeDriver.amazoneks.vpc.title")
+       detail=(t "nodeDriver.amazoneks.vpc.detail")
+       showExpand=false
+       expandOnInit=true
+       expandAll=al.expandAll
+       expand=(action expandFn)
+    }}
+<div class="row">
+    <div class="col span-6">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.associateWorkerNodePublicIp.title"}}
+        </label>
+        {{#if (or (eq step 3) (eq step 4))}}
+        <div class="radio">
+            <label>
+                {{radio-button
+                  selection=cluster.eksEngineConfig.associateWorkerNodePublicIp
+                  value=true
+                  disabled=editing
+                }}
+                {{t "nodeDriver.amazoneks.associateWorkerNodePublicIp.radio.default"}}
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                {{radio-button
+                  selection=cluster.eksEngineConfig.associateWorkerNodePublicIp
+                  value=false
+                  disabled=editing
+                }}
+                {{t "nodeDriver.amazoneks.associateWorkerNodePublicIp.radio.off"}}
+            </label>
+        </div>
+        {{else}}
+        {{#if (eq cluster.eksEngineConfig.associateWorkerNodePublicIp true)}}
+        <div>
+            {{t "nodeDriver.amazoneks.associateWorkerNodePublicIp.radio.default"}}
+        </div>
+        {{else}}
+        <div>
+            {{t "nodeDriver.amazoneks.associateWorkerNodePublicIp.radio.off"}}
+        </div>
+        {{/if}}
+        {{/if}}
+    </div>
+    <div class="col span-6">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.vpc.title"}}
+        </label>
+        {{#if (or (eq step 3) (eq step 4))}}
+        <div class="radio">
+            <label>
+                {{radio-button
+                  selection=vpcSubnetMode
+                  value="default"
+                  disabled=(or editing (eq cluster.eksEngineConfig.associateWorkerNodePublicIp false))
+                }}
+                {{t "nodeDriver.amazoneks.vpc.radio.default"}}
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                {{radio-button
+                  selection=vpcSubnetMode
+                  value="custom"
+                  disabled=(or editing (eq cluster.eksEngineConfig.associateWorkerNodePublicIp false))
+                }}
+                {{t "nodeDriver.amazoneks.vpc.radio.custom"}}
+            </label>
+        </div>
+        {{#unless (eq vpcSubnetMode "default")}}
+        <NewSelect class="form-control" @value={{cluster.eksEngineConfig.virtualNetwork}} @content={{filteredVpcs}}
+            @optionValuePath="id" @optionLabelPath="label" />
+        {{/unless}}
+        {{else}}
+        {{#if (eq vpcSubnetMode "default")}}
+        <div>
+            {{t "nodeDriver.amazoneks.vpc.noneSelected"}}
+        </div>
+        {{else}}
+        <div>
+            {{cluster.eksEngineConfig.virtualNetwork}}
+        </div>
+        {{/if}}
+        {{/if}}
+    </div>
+
+    {{#if (and (eq step 4) (eq vpcSubnetMode "custom"))}}
+    <div class="col span-6">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.subnet.title"}}
+        </label>
+        <select class="form-control existing-subnet-groups" multiple="true"
+            onchange={{action "multiSubnetGroupSelect" ""}}>
+            {{#each filteredSubnets as |choice|}}
+            <option value={{choice.subnetId}}
+                selected={{array-includes cluster.eksEngineConfig.subnets choice.subnetId}}>
+                {{choice.subnetName}} ({{choice.subnetId}})
+            </option>
+            {{/each}}
+        </select>
+        {{#if (eq cluster.eksEngineConfig.associateWorkerNodePublicIp false)}}
+        <p class="help-block">{{t "nodeDriver.amazoneks.subnet.help"}}</p>
+        {{/if}}
+    </div>
+    {{else}}
+    {{#if (and (eq vpcSubnetMode "custom") (gte step 4)) }}
+    <div class="col span-6">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.subnet.title"}}
+        </label>
+        {{#each cluster.eksEngineConfig.subnets as |sub|}}
+        <div>{{sub}}</div>
+        {{/each}}
+    </div>
+    {{/if}}
+    {{/if}}
+</div>
+
+{{/accordion-list-item}}
+
+{{#if (eq step 3)}}
+{{#if (eq vpcSubnetMode "default")}}
+{{save-cancel
+          editing=(eq mode "edit")
+          saveDisabled=canSaveVPC
+          save=(action "setVPCS")
+          cancel=close
+          createLabel="nodeDriver.amazoneks.vpc.nextRancherDefault"
+          savingLabel="nodeDriver.amazoneks.vpc.loadingRancherDefault"
+        }}
+{{else}}
+{{save-cancel
+          editing=(eq mode "edit")
+          saveDisabled=canSaveVPC
+          save=(action "setVPCS")
+          cancel=close
+          createLabel="nodeDriver.amazoneks.vpc.next"
+          savingLabel="nodeDriver.amazoneks.vpc.loading"
+        }}
+{{/if}}
+{{/if}}
+
+{{#if (eq step 4)}}
+{{save-cancel
+        editing=(eq mode "edit")
+        saveDisabled=(lte cluster.eksEngineConfig.subnets.length 0)
+        save=(action "setSubnets")
+        cancel=close
+        createLabel="nodeDriver.amazoneks.subnet.next"
+        savingLabel="nodeDriver.amazoneks.subnet.loading"
+      }}
+{{/if}}
+{{/if}}
+
+{{#if (and (gte step 5) (eq vpcSubnetMode "custom") )}}
+{{#accordion-list-item
+       title=(t "nodeDriver.amazoneks.securityGroup.title")
+       detail=(t "nodeDriver.amazoneks.securityGroup.detail")
+       showExpand=false
+       expandOnInit=true
+       expandAll=al.expandAll
+       expand=(action expandFn)
+    }}
+<div class="row">
+    {{#if (eq step 5)}}
+    <select class="form-control existing-security-groups" multiple="true"
+        onchange={{action "multiSecurityGroupSelect" ""}}>
+        {{#each filteredSecurityGroups as |choice|}}
+        <option value={{choice.GroupId}}
+            selected={{array-includes cluster.eksEngineConfig.securityGroups choice.GroupId}}>
+            {{choice.GroupName}} ({{choice.GroupId}})
+        </option>
+        {{/each}}
+    </select>
+    {{else}}
+    {{#if cluster.eksEngineConfig.securityGroups}}
+    {{#each cluster.eksEngineConfig.securityGroups as |sg|}}
+    <div>{{sg}}</div>
+    {{/each}}
+    {{/if}}
+    {{/if}}
+</div>
+{{/accordion-list-item}}
+
+{{#if (eq step 5)}}
+{{save-cancel
+        editing=(eq mode "edit")
+        saveDisabled=canSaveSG
+        save=(action (mut step) 6)
+        cancel=close
+        createLabel="nodeDriver.amazonec2.securityGroup.next"
+        savingLabel="nodeDriver.amazonec2.securityGroup.loading"
+      }}
+{{/if}}
+{{/if}}
+
+{{#if (eq step 6)}}
+{{#accordion-list-item
+       title=(t "clusterNew.nodes.title")
+       detail=(t "clusterNew.nodes.detail")
+       showExpand=false
+       expandOnInit=true
+       expandAll=al.expandAll
+       expand=(action expandFn)
+    }}
+<div class="row">
+    <div class="col span-6">
+        <label class="acc-label">
+            {{t "nodeDriver.amazonec2.instanceType.label"}}
+        </label>
+        {{#input-or-display
+             editable=(eq mode "new")
+             value=cluster.eksEngineConfig.instanceType
+          }}
+        {{new-select
+              classNames="form-control"
+              value=cluster.eksEngineConfig.instanceType
+              content=instanceTypes
+              optionValuePath="name"
+              optionLabelPath="name"
+              optionGroupPath="group"
+            }}
+        {{/input-or-display}}
+    </div>
+    <div class="col span-6">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.ami.label"}}
+        </label>
+        {{#input-or-display
+             editable=(eq mode "new")
+             value=cluster.eksEngineConfig.ami
+          }}
+        {{input type="text" value=cluster.eksEngineConfig.ami}}
+        {{/input-or-display}}
+        <p class="help-block">
+            {{t "nodeDriver.amazoneks.ami.help"}}
+        </p>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col span-6">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.desired.label"}}
+        </label>
+        {{#input-or-display
+             
+             value=cluster.eksEngineConfig.desiredNodes
+          }}
+        {{input-number value=cluster.eksEngineConfig.desiredNodes min=1}}
+        {{/input-or-display}}
+    </div>
+    <div class="col span-6">
+        <label class="acc-label">
+            {{t "nodeDriver.amazoneks.nodeVolumeSize.label"}}
+        </label>
+        {{#input-or-display
+             editable=(eq mode "new")
+             value=cluster.eksEngineConfig.nodeVolumeSize
+          }}
+        <div class="input-group">
+            {{input-integer
+                min=0
+                value=cluster.eksEngineConfig.nodeVolumeSize
+                classNames="form-control"
+                placeholder=(t "nodeDriver.amazoneks.nodeVolumeSize.placeholder")
+              }}
+            <span class="input-group-addon bg-default">
+                {{t "generic.gigabyte"}}
+            </span>
+        </div>
+        {{/input-or-display}}
+    </div>
+</div>
+<div class="row">
+    <div class="row-same-height row-full-height">
+        <div class="col span-6 col span-height col full-height col-top mb-20">
+            <div class="no-padding-margin full-height">
+                <label class="acc-label" for="aws-eks-key-piar">
+                    {{t "nodeDriver.amazoneks.keyPairs.label"}}
+                    <span class="inline-block">
+                        {{#tooltip-element
+                     type="tooltip-basic"
+                     model=(t "nodeDriver.amazoneks.keyPairs.tooltip" htmlSafe=true)
+                     tooltipTemplate="tooltip-static"
+                     aria-describedby="tooltip-base"
+                     tooltipFor="tooltipPoolCreateAfter"
+                     placement="top"
+                     tagName="div"
+                  }}
+                        <i class="icon icon-help icon-blue"></i>
+                        {{/tooltip-element}}
+                    </span>
+                </label>
+                {{#input-or-display
+                 editable=(eq mode "new")
+                 value=cluster.eksEngineConfig.keyPairName
+              }}
+                {{searchable-select
+                  id="aws-eks-key-piar"
+                  classNames="form-control"
+                  value=cluster.eksEngineConfig.keyPairName
+                  content=filteredKeyPairs
+                  optionValuePath="KeyName"
+                  optionLabelPath="KeyName"
+                  prompt=(t "nodeDriver.amazoneks.keyPairs.prompt")
+                }}
+                {{/input-or-display}}
+            </div>
+        </div>
+        <div class="col span-6 col span-height col full-height col-top mb-20">
+            <div class="no-padding-margin full-height">
+                <label class="acc-label" for="ebs-encryption">
+                    {{t "nodeDriver.amazoneks.encryptEbs.label"}}
+                </label>
+                <div>
+                    {{#input-or-display
+                   editable=(eq mode "new")
+                   value=cluster.eksEngineConfig.ebsEncryption
+                }}
+                    {{input
+                    id="ebs-encryption"
+                    type="checkbox"
+                    checked=cluster.eksEngineConfig.ebsEncryption
+                  }}
+                    {{/input-or-display}}
+                </div>
+                <p class="help-block">
+                    {{t "nodeDriver.amazoneks.encryptEbs.detail"}}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col span-12">
+        <label class="acc-label pb-5">
+            {{t "nodeDriver.amazoneks.userData.label"}}
+        </label>
+        {{input-text-file
+            accept="text/plain"
+            canChangeName=false
+            classNames="box"
+            minHeight=200
+            placeholder="nodeDriver.amazoneks.userData.placeholder"
+            value=cluster.eksEngineConfig.userData
+            disabled=(not-eq mode "new")
+          }}
+        <p class="help-block">
+            {{t "nodeDriver.amazoneks.userData.help"}}
+        </p>
+    </div>
+</div>
+{{/accordion-list-item}}
+
+{{save-cancel
+      editing=(eq mode "edit")
+      save=(action "driverSave")
+      cancel=close
+    }}
+{{/if}}
+
+{{top-errors errors=errors}}
+{{top-errors errors=otherErrors}}
+{{top-errors errors=clusterErrors}}
+{{/accordion-list}}
