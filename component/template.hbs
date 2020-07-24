@@ -9,27 +9,13 @@
 <div class="row">
     <div class="col span-3">
         <label class="acc-label">
-            {{t "nodeDriver.amazoneks.region.label"}}
-        </label>
-        {{#if (and (eq mode "new") (eq step 1))}}
-        <select class="form-control" onchange={{action (mut cluster.doksEngineConfig.region) value="target.value"}}>
-            {{#each regionChoices as |choice|}}
-            <option value={{choice}} selected={{eq cluster.doksEngineConfig.region choice}}>{{choice}}</option>
-            {{/each}}
-        </select>
-        {{else}}
-        <div>{{cluster.doksEngineConfig.region}}</div>
-        {{/if}}
-    </div>
-
-    <div class="col span-3">
-        <label class="acc-label">
             {{t "nodeDriver.amazoneks.accessKey.label"}}
         </label>
         {{#if (eq step 1)}}
         {{input
-            type="text"
+            type="password"
             name="username"
+            size="80"
             classNames="form-control"
             placeholder=(t "nodeDriver.amazoneks.accessKey.placeholder")
             value=cluster.doksEngineConfig.accessKey
@@ -38,45 +24,11 @@
         <div>{{cluster.doksEngineConfig.accessKey}}</div>
         {{/if}}
     </div>
-
-    <div class="col span-3">
-        <label class="acc-label">
-            {{t "nodeDriver.amazoneks.secretKey.label"}}
-        </label>
-        {{#if (eq step 1)}}
-        {{input
-            type="password"
-            name="password"
-            classNames="form-control"
-            placeholder=(t "nodeDriver.amazoneks.secretKey.placeholder")
-            value=cluster.doksEngineConfig.secretKey
-          }}
-        {{else}}
-        <div class="text-muted text-italic">{{t "nodeDriver.amazoneks.secretKey.provided"}}</div>
-        {{/if}}
-    </div>
-
-    <div class="col span-3">
-        <label class="acc-label">
-            {{t "nodeDriver.amazoneks.sessionToken.label" htmlSafe=true}}
-        </label>
-        {{#if (eq step 1)}}
-        {{input
-            type="password"
-            name="session-token"
-            classNames="form-control"
-            placeholder=(t "nodeDriver.amazoneks.sessionToken.placeholder")
-            value=cluster.doksEngineConfig.sessionToken
-          }}
-        {{else}}
-        <div class="text-muted text-italic">{{t "nodeDriver.amazoneks.sessionToken.provided"}}</div>
-        {{/if}}
-    </div>
 </div>
 
 {{#if (eq step 1)}}
 <div class="row">
-    <div class="span-9 offset-3">
+    <div class="span-9">
         <p class="text-info text-small m-0">{{t "nodeDriver.amazoneks.access.help"}}</p>
     </div>
 </div>
