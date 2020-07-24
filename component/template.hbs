@@ -1,7 +1,7 @@
 {{#accordion-list showExpandAll=false as | al expandFn |}}
 {{#accordion-list-item
-     title=(t "clusterNew.amazoneks.access.title")
-     detail=(t "clusterNew.amazoneks.access.detail")
+     title="Account Access"
+     detail="Configure the Personal access token"
      expandAll=expandAll
      expand=(action expandFn)
      expandOnInit=true
@@ -9,7 +9,7 @@
 <div class="row">
     <div class="col span-3">
         <label class="acc-label">
-            {{t "nodeDriver.amazoneks.accessKey.label"}}
+            Token
         </label>
         {{#if (eq step 1)}}
         {{input
@@ -17,7 +17,7 @@
             name="username"
             size="80"
             classNames="form-control"
-            placeholder=(t "nodeDriver.amazoneks.accessKey.placeholder")
+            placeholder="Your access token"
             value=cluster.doksEngineConfig.accessKey
           }}
         {{else}}
@@ -29,7 +29,10 @@
 {{#if (eq step 1)}}
 <div class="row">
     <div class="span-9">
-        <p class="text-info text-small m-0">{{t "nodeDriver.amazoneks.access.help"}}</p>
+        <p class="text-info text-small m-0">Personal access tokens function like a combined name and password for API
+            authentication.
+
+        </p>
     </div>
 </div>
 {{/if}}
