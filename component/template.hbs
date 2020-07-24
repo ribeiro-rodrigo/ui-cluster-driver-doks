@@ -12,13 +12,13 @@
             {{t "nodeDriver.amazoneks.region.label"}}
         </label>
         {{#if (and (eq mode "new") (eq step 1))}}
-        <select class="form-control" onchange={{action (mut cluster.eksEngineConfig.region) value="target.value"}}>
+        <select class="form-control" onchange={{action (mut cluster.doksEngineConfig.region) value="target.value"}}>
             {{#each regionChoices as |choice|}}
-            <option value={{choice}} selected={{eq cluster.eksEngineConfig.region choice}}>{{choice}}</option>
+            <option value={{choice}} selected={{eq cluster.doksEngineConfig.region choice}}>{{choice}}</option>
             {{/each}}
         </select>
         {{else}}
-        <div>{{cluster.eksEngineConfig.region}}</div>
+        <div>{{cluster.doksEngineConfig.region}}</div>
         {{/if}}
     </div>
 
@@ -32,10 +32,10 @@
             name="username"
             classNames="form-control"
             placeholder=(t "nodeDriver.amazoneks.accessKey.placeholder")
-            value=cluster.eksEngineConfig.accessKey
+            value=cluster.doksEngineConfig.accessKey
           }}
         {{else}}
-        <div>{{cluster.eksEngineConfig.accessKey}}</div>
+        <div>{{cluster.doksEngineConfig.accessKey}}</div>
         {{/if}}
     </div>
 
@@ -49,7 +49,7 @@
             name="password"
             classNames="form-control"
             placeholder=(t "nodeDriver.amazoneks.secretKey.placeholder")
-            value=cluster.eksEngineConfig.secretKey
+            value=cluster.doksEngineConfig.secretKey
           }}
         {{else}}
         <div class="text-muted text-italic">{{t "nodeDriver.amazoneks.secretKey.provided"}}</div>
@@ -66,7 +66,7 @@
             name="session-token"
             classNames="form-control"
             placeholder=(t "nodeDriver.amazoneks.sessionToken.placeholder")
-            value=cluster.eksEngineConfig.sessionToken
+            value=cluster.doksEngineConfig.sessionToken
           }}
         {{else}}
         <div class="text-muted text-italic">{{t "nodeDriver.amazoneks.sessionToken.provided"}}</div>
@@ -110,7 +110,7 @@
         {{new-select
             classNames="form-control"
             content=versionChoices
-            value=cluster.eksEngineConfig.kubernetesVersion
+            value=cluster.doksEngineConfig.kubernetesVersion
           }}
         {{#if editing}}
         <!--p class="help-block">{{t "formVersions.eks.helpBlock"}}</p-->
@@ -145,7 +145,7 @@
         {{/unless}}
         {{else}}
         <div>
-            {{#if cluster.eksEngineConfig.serviceRole}}
+            {{#if cluster.doksEngineConfig.serviceRole}}
             {{readableServiceRole}}
             {{else}}
             {{t "nodeDriver.amazoneks.role.noneSelected"}}
@@ -185,7 +185,7 @@
         <div class="radio">
             <label>
                 {{radio-button
-                  selection=cluster.eksEngineConfig.associateWorkerNodePublicIp
+                  selection=cluster.doksEngineConfig.associateWorkerNodePublicIp
                   value=true
                   disabled=editing
                 }}
@@ -195,7 +195,7 @@
         <div class="radio">
             <label>
                 {{radio-button
-                  selection=cluster.eksEngineConfig.associateWorkerNodePublicIp
+                  selection=cluster.doksEngineConfig.associateWorkerNodePublicIp
                   value=false
                   disabled=editing
                 }}
@@ -203,7 +203,7 @@
             </label>
         </div>
         {{else}}
-        {{#if (eq cluster.eksEngineConfig.associateWorkerNodePublicIp true)}}
+        {{#if (eq cluster.doksEngineConfig.associateWorkerNodePublicIp true)}}
         <div>
             {{t "nodeDriver.amazoneks.associateWorkerNodePublicIp.radio.default"}}
         </div>
@@ -224,7 +224,7 @@
                 {{radio-button
                   selection=vpcSubnetMode
                   value="default"
-                  disabled=(or editing (eq cluster.eksEngineConfig.associateWorkerNodePublicIp false))
+                  disabled=(or editing (eq cluster.doksEngineConfig.associateWorkerNodePublicIp false))
                 }}
                 {{t "nodeDriver.amazoneks.vpc.radio.default"}}
             </label>
@@ -234,13 +234,13 @@
                 {{radio-button
                   selection=vpcSubnetMode
                   value="custom"
-                  disabled=(or editing (eq cluster.eksEngineConfig.associateWorkerNodePublicIp false))
+                  disabled=(or editing (eq cluster.doksEngineConfig.associateWorkerNodePublicIp false))
                 }}
                 {{t "nodeDriver.amazoneks.vpc.radio.custom"}}
             </label>
         </div>
         {{#unless (eq vpcSubnetMode "default")}}
-        <NewSelect class="form-control" @value={{cluster.eksEngineConfig.virtualNetwork}} @content={{filteredVpcs}}
+        <NewSelect class="form-control" @value={{cluster.doksEngineConfig.virtualNetwork}} @content={{filteredVpcs}}
             @optionValuePath="id" @optionLabelPath="label" />
         {{/unless}}
         {{else}}
@@ -250,7 +250,7 @@
         </div>
         {{else}}
         <div>
-            {{cluster.eksEngineConfig.virtualNetwork}}
+            {{cluster.doksEngineConfig.virtualNetwork}}
         </div>
         {{/if}}
         {{/if}}
@@ -265,12 +265,12 @@
             onchange={{action "multiSubnetGroupSelect" ""}}>
             {{#each filteredSubnets as |choice|}}
             <option value={{choice.subnetId}}
-                selected={{array-includes cluster.eksEngineConfig.subnets choice.subnetId}}>
+                selected={{array-includes cluster.doksEngineConfig.subnets choice.subnetId}}>
                 {{choice.subnetName}} ({{choice.subnetId}})
             </option>
             {{/each}}
         </select>
-        {{#if (eq cluster.eksEngineConfig.associateWorkerNodePublicIp false)}}
+        {{#if (eq cluster.doksEngineConfig.associateWorkerNodePublicIp false)}}
         <p class="help-block">{{t "nodeDriver.amazoneks.subnet.help"}}</p>
         {{/if}}
     </div>
@@ -280,7 +280,7 @@
         <label class="acc-label">
             {{t "nodeDriver.amazoneks.subnet.title"}}
         </label>
-        {{#each cluster.eksEngineConfig.subnets as |sub|}}
+        {{#each cluster.doksEngineConfig.subnets as |sub|}}
         <div>{{sub}}</div>
         {{/each}}
     </div>
@@ -315,7 +315,7 @@
 {{#if (eq step 4)}}
 {{save-cancel
         editing=(eq mode "edit")
-        saveDisabled=(lte cluster.eksEngineConfig.subnets.length 0)
+        saveDisabled=(lte cluster.doksEngineConfig.subnets.length 0)
         save=(action "setSubnets")
         cancel=close
         createLabel="nodeDriver.amazoneks.subnet.next"
@@ -339,14 +339,14 @@
         onchange={{action "multiSecurityGroupSelect" ""}}>
         {{#each filteredSecurityGroups as |choice|}}
         <option value={{choice.GroupId}}
-            selected={{array-includes cluster.eksEngineConfig.securityGroups choice.GroupId}}>
+            selected={{array-includes cluster.doksEngineConfig.securityGroups choice.GroupId}}>
             {{choice.GroupName}} ({{choice.GroupId}})
         </option>
         {{/each}}
     </select>
     {{else}}
-    {{#if cluster.eksEngineConfig.securityGroups}}
-    {{#each cluster.eksEngineConfig.securityGroups as |sg|}}
+    {{#if cluster.doksEngineConfig.securityGroups}}
+    {{#each cluster.doksEngineConfig.securityGroups as |sg|}}
     <div>{{sg}}</div>
     {{/each}}
     {{/if}}
@@ -382,11 +382,11 @@
         </label>
         {{#input-or-display
              editable=(eq mode "new")
-             value=cluster.eksEngineConfig.instanceType
+             value=cluster.doksEngineConfig.instanceType
           }}
         {{new-select
               classNames="form-control"
-              value=cluster.eksEngineConfig.instanceType
+              value=cluster.doksEngineConfig.instanceType
               content=instanceTypes
               optionValuePath="name"
               optionLabelPath="name"
@@ -400,9 +400,9 @@
         </label>
         {{#input-or-display
              editable=(eq mode "new")
-             value=cluster.eksEngineConfig.ami
+             value=cluster.doksEngineConfig.ami
           }}
-        {{input type="text" value=cluster.eksEngineConfig.ami}}
+        {{input type="text" value=cluster.doksEngineConfig.ami}}
         {{/input-or-display}}
         <p class="help-block">
             {{t "nodeDriver.amazoneks.ami.help"}}
@@ -417,9 +417,9 @@
         </label>
         {{#input-or-display
              
-             value=cluster.eksEngineConfig.desiredNodes
+             value=cluster.doksEngineConfig.desiredNodes
           }}
-        {{input-number value=cluster.eksEngineConfig.desiredNodes min=1}}
+        {{input-number value=cluster.doksEngineConfig.desiredNodes min=1}}
         {{/input-or-display}}
     </div>
     <div class="col span-6">
@@ -428,12 +428,12 @@
         </label>
         {{#input-or-display
              editable=(eq mode "new")
-             value=cluster.eksEngineConfig.nodeVolumeSize
+             value=cluster.doksEngineConfig.nodeVolumeSize
           }}
         <div class="input-group">
             {{input-integer
                 min=0
-                value=cluster.eksEngineConfig.nodeVolumeSize
+                value=cluster.doksEngineConfig.nodeVolumeSize
                 classNames="form-control"
                 placeholder=(t "nodeDriver.amazoneks.nodeVolumeSize.placeholder")
               }}
@@ -466,12 +466,12 @@
                 </label>
                 {{#input-or-display
                  editable=(eq mode "new")
-                 value=cluster.eksEngineConfig.keyPairName
+                 value=cluster.doksEngineConfig.keyPairName
               }}
                 {{searchable-select
                   id="aws-eks-key-piar"
                   classNames="form-control"
-                  value=cluster.eksEngineConfig.keyPairName
+                  value=cluster.doksEngineConfig.keyPairName
                   content=filteredKeyPairs
                   optionValuePath="KeyName"
                   optionLabelPath="KeyName"
@@ -488,12 +488,12 @@
                 <div>
                     {{#input-or-display
                    editable=(eq mode "new")
-                   value=cluster.eksEngineConfig.ebsEncryption
+                   value=cluster.doksEngineConfig.ebsEncryption
                 }}
                     {{input
                     id="ebs-encryption"
                     type="checkbox"
-                    checked=cluster.eksEngineConfig.ebsEncryption
+                    checked=cluster.doksEngineConfig.ebsEncryption
                   }}
                     {{/input-or-display}}
                 </div>
@@ -515,7 +515,7 @@
             classNames="box"
             minHeight=200
             placeholder="nodeDriver.amazoneks.userData.placeholder"
-            value=cluster.eksEngineConfig.userData
+            value=cluster.doksEngineConfig.userData
             disabled=(not-eq mode "new")
           }}
         <p class="help-block">
