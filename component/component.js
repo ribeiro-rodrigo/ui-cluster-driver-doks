@@ -182,18 +182,8 @@ export default Ember.Component.extend(ClusterDriver, {
             cb()
         },
         loadVPS(cb) {
-            if (get(this, 'selectedServiceRole')) {
-                set(this, 'cluster.%%DRIVERNAME%%EngineConfig.serviceRole', get(this, 'selectedServiceRole'));
-            }
-
-            this.loadVpcs(this.authCreds()).then(() => {
-                set(this, 'step', 3);
-
-                cb();
-            }).catch((err) => {
-                get(this, 'errors').pushObject(err);
-                cb(false, err);
-            });
+            set(this, 'step', 3)
+            cb()
         },
         setVPCS(cb) {
             if (get(this, 'vpcSubnetMode') === 'custom') {

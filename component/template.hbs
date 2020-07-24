@@ -117,8 +117,8 @@
 
 {{#if (gte step 3)}}
 {{#accordion-list-item
-       title=(t "nodeDriver.amazoneks.vpc.title")
-       detail=(t "nodeDriver.amazoneks.vpc.detail")
+       title="Node Pool"
+       detail="Choose cluster capacity"
        showExpand=false
        expandOnInit=true
        expandAll=al.expandAll
@@ -127,113 +127,44 @@
 <div class="row">
     <div class="col span-6">
         <label class="acc-label">
-            {{t "nodeDriver.amazoneks.associateWorkerNodePublicIp.title"}}
+            Node Pool Name
         </label>
-        {{#if (or (eq step 3) (eq step 4))}}
-        <div class="radio">
-            <label>
-                {{radio-button
-                  selection=cluster.doksEngineConfig.associateWorkerNodePublicIp
-                  value=true
-                  disabled=editing
-                }}
-                {{t "nodeDriver.amazoneks.associateWorkerNodePublicIp.radio.default"}}
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                {{radio-button
-                  selection=cluster.doksEngineConfig.associateWorkerNodePublicIp
-                  value=false
-                  disabled=editing
-                }}
-                {{t "nodeDriver.amazoneks.associateWorkerNodePublicIp.radio.off"}}
-            </label>
-        </div>
+        {{#if (eq step 3)}}
+        {{input
+            type="text"
+            name="username"
+            classNames="form-control"
+            placeholder="Enter Node Pool Name"
+            value=cluster.doksEngineConfig.accessKey
+          }}
         {{else}}
-        {{#if (eq cluster.doksEngineConfig.associateWorkerNodePublicIp true)}}
-        <div>
-            {{t "nodeDriver.amazoneks.associateWorkerNodePublicIp.radio.default"}}
-        </div>
-        {{else}}
-        <div>
-            {{t "nodeDriver.amazoneks.associateWorkerNodePublicIp.radio.off"}}
-        </div>
-        {{/if}}
+        <div>{{cluster.doksEngineConfig.accessKey}}</div>
         {{/if}}
     </div>
     <div class="col span-6">
         <label class="acc-label">
-            {{t "nodeDriver.amazoneks.vpc.title"}}
+            Machine Type
         </label>
-        {{#if (or (eq step 3) (eq step 4))}}
-        <div class="radio">
-            <label>
-                {{radio-button
-                  selection=vpcSubnetMode
-                  value="default"
-                  disabled=(or editing (eq cluster.doksEngineConfig.associateWorkerNodePublicIp false))
-                }}
-                {{t "nodeDriver.amazoneks.vpc.radio.default"}}
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                {{radio-button
-                  selection=vpcSubnetMode
-                  value="custom"
-                  disabled=(or editing (eq cluster.doksEngineConfig.associateWorkerNodePublicIp false))
-                }}
-                {{t "nodeDriver.amazoneks.vpc.radio.custom"}}
-            </label>
-        </div>
-        {{#unless (eq vpcSubnetMode "default")}}
-        <NewSelect class="form-control" @value={{cluster.doksEngineConfig.virtualNetwork}} @content={{filteredVpcs}}
-            @optionValuePath="id" @optionLabelPath="label" />
-        {{/unless}}
-        {{else}}
-        {{#if (eq vpcSubnetMode "default")}}
-        <div>
-            {{t "nodeDriver.amazoneks.vpc.noneSelected"}}
-        </div>
-        {{else}}
-        <div>
-            {{cluster.doksEngineConfig.virtualNetwork}}
-        </div>
-        {{/if}}
+        {{new-select
+            classNames="form-control"
+            content=versionChoices
+            value=cluster.doksEngineConfig.kubernetesVersion
+          }}
+        {{#if editing}}
+        <!--p class="help-block">{{t "formVersions.eks.helpBlock"}}</p-->
         {{/if}}
     </div>
-
-    {{#if (and (eq step 4) (eq vpcSubnetMode "custom"))}}
-    <div class="col span-6">
+    <div class="col span-2">
         <label class="acc-label">
-            {{t "nodeDriver.amazoneks.subnet.title"}}
+            Number Nodes
         </label>
-        <select class="form-control existing-subnet-groups" multiple="true"
-            onchange={{action "multiSubnetGroupSelect" ""}}>
-            {{#each filteredSubnets as |choice|}}
-            <option value={{choice.subnetId}}
-                selected={{array-includes cluster.doksEngineConfig.subnets choice.subnetId}}>
-                {{choice.subnetName}} ({{choice.subnetId}})
-            </option>
-            {{/each}}
-        </select>
-        {{#if (eq cluster.doksEngineConfig.associateWorkerNodePublicIp false)}}
-        <p class="help-block">{{t "nodeDriver.amazoneks.subnet.help"}}</p>
-        {{/if}}
+        {{#input-or-display
+             
+             value=cluster.doksEngineConfig.desiredNodes
+          }}
+        {{input-number value=cluster.doksEngineConfig.desiredNodes min=1}}
+        {{/input-or-display}}
     </div>
-    {{else}}
-    {{#if (and (eq vpcSubnetMode "custom") (gte step 4)) }}
-    <div class="col span-6">
-        <label class="acc-label">
-            {{t "nodeDriver.amazoneks.subnet.title"}}
-        </label>
-        {{#each cluster.doksEngineConfig.subnets as |sub|}}
-        <div>{{sub}}</div>
-        {{/each}}
-    </div>
-    {{/if}}
-    {{/if}}
 </div>
 
 {{/accordion-list-item}}
