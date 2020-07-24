@@ -178,61 +178,8 @@ export default Ember.Component.extend(ClusterDriver, {
             set(this, 'cluster.%%DRIVERNAME%%EngineConfig.subnets', selectedOptions);
         },
         awsLogin(cb) {
-            this.listRoles(this.authCreds()).then((roles) => {
-                let eksRoles = [];
-
-                eksRoles = roles.filter((role) => {
-                    //
-                    let policy = JSON.parse(decodeURIComponent(get(role, 'AssumeRolePolicyDocument')));
-                    let statement = get(policy, 'Statement');
-                    let isEksRole = false;
-
-                    statement.forEach((doc) => {
-                        let principal = get(doc, 'Principal');
-
-                        if (principal) {
-                            let service = get(principal, 'Service');
-
-                            if (service && (service.includes('eks.amazonaws') || service.includes('EKS')) && !eksRoles.findBy('RoleId', get(role, 'RoleId'))) {
-                                // console.log(service.includes('eks'), service.includes('EKS'), eksRoles.findBy('RoleId', get(role, 'RoleId')), role)
-                                isEksRole = true;
-                            } else if (get(principal, 'EKS')) {
-                                // console.log(get(principal, 'EKS'), role);
-                                isEksRole = true;
-                            } else {
-                                isEksRole = false;
-                            }
-                        }
-                    });
-
-                    if (isEksRole) {
-                        return role;
-                    }
-                });
-
-                set(this, 'serviceRoles', eksRoles);
-
-                return this.loadKeyPairs(this.authCreds()).then((/* keyPairs */) => {
-                    if (this.mode === 'edit') {
-                        set(this, 'step', 6);
-                    } else {
-                        set(this, 'step', 2);
-                    }
-                    cb();
-                }).catch((err) => {
-                    //get(this, 'errors').pushObject(err);
-                    let errors = get(this, 'errors') || [];
-                    errors.pushObject(err);
-                    set(this, 'errors', errors);
-                    cb(false, err);
-                });
-            }).catch((err) => {
-                //get(this, 'errors').pushObject(err);
-                let errors = get(this, 'errors') || [];
-                errors.pushObject(err);
-                set(this, 'errors', errors);
-                cb(false, err);
-            });
+            set(this, 'step', 2)
+            cb()
         },
         loadVPS(cb) {
             if (get(this, 'selectedServiceRole')) {
@@ -374,32 +321,9 @@ export default Ember.Component.extend(ClusterDriver, {
     }),
 
     versionChoices: computed('versions', function () {
-        const {
-            cluster: {
-                eksEngineConfig: { kubernetesVersion: initialVersion }
-            },
-            app,
-            kubernetesVersionContent,
-            mode,
-        } = this;
-        //const versionChoices = this.versionChoiceService.parseCloudProviderVersionChoices(kubernetesVersionContent.slice(), initialVersion, mode);
-        const versionChoices = this.parseCloudProviderVersionChoices(kubernetesVersionContent.slice(), initialVersion, mode);
-        // only EKS and edit - user can only upgrade a single minor version at a time
-        if (this.editing) {
-            const initalMinorVersion = parseInt(minor(coerce(initialVersion)), 10);
-
-            versionChoices.forEach((vc) => {
-                const vcMinorV = parseInt(minor(coerce(vc.value)), 10);
-                const diff = vcMinorV - initalMinorVersion;
-
-                if (diff > 1) {
-                    setProperties(vc, {
-                        disabled: true,
-                        label: `${vc.label} ${app.t('formVersions.eks.label')}`,
-                    });
-                }
-            })
-        }
+        let versionChoices = [
+            { label: "aaa", value: "aaa" }
+        ]
 
         return versionChoices;
     }),

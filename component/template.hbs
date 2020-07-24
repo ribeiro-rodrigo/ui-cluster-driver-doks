@@ -71,41 +71,34 @@
         <!--p class="help-block">{{t "formVersions.eks.helpBlock"}}</p-->
         {{/if}}
     </div>
+
     <div class="col span-6">
         <label class="acc-label">
-            {{t "nodeDriver.amazoneks.role.label"}}
+            Region
         </label>
-        {{#if (eq step 2)}}
-        <div class="radio pt-0">
-            <label>
-                {{radio-button
-                  selection=serviceRoleMode
-                  value="default"
-                  disabled=editing
-                }}
-                {{t "nodeDriver.amazoneks.role.radio.default"}}
-            </label>
-            <label>
-                {{radio-button
-                  selection=serviceRoleMode
-                  value="custom"
-                  disabled=editing
-                }}
-                {{t "nodeDriver.amazoneks.role.radio.custom"}}
-            </label>
-        </div>
-        {{#unless (eq serviceRoleMode "default")}}
-        <NewSelect class="form-control" @value={{ selectedServiceRole }} @content={{ serviceRoles }}
-            @optionValuePath="RoleName" @optionLabelPath="RoleName" />
-        {{/unless}}
-        {{else}}
-        <div>
-            {{#if cluster.doksEngineConfig.serviceRole}}
-            {{readableServiceRole}}
-            {{else}}
-            {{t "nodeDriver.amazoneks.role.noneSelected"}}
-            {{/if}}
-        </div>
+        {{new-select
+            classNames="form-control"
+            content=versionChoices
+            value=cluster.doksEngineConfig.kubernetesVersion
+          }}
+        {{#if editing}}
+        <!--p class="help-block">{{t "formVersions.eks.helpBlock"}}</p-->
+        {{/if}}
+    </div>
+
+</div>
+<div class="row">
+    <div class="col span-6">
+        <label class="acc-label">
+            VPC
+        </label>
+        {{new-select
+            classNames="form-control"
+            content=versionChoices
+            value=cluster.doksEngineConfig.kubernetesVersion
+          }}
+        {{#if editing}}
+        <!--p class="help-block">{{t "formVersions.eks.helpBlock"}}</p-->
         {{/if}}
     </div>
 </div>
