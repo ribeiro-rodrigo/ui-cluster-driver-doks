@@ -125,7 +125,7 @@
        expand=(action expandFn)
     }}
 <div class="row">
-    <div class="col span-6">
+    <div class="col span-4">
         <label class="acc-label">
             Node Pool Name
         </label>
@@ -141,7 +141,7 @@
         <div>{{cluster.doksEngineConfig.accessKey}}</div>
         {{/if}}
     </div>
-    <div class="col span-6">
+    <div class="col span-4">
         <label class="acc-label">
             Machine Type
         </label>
@@ -154,7 +154,7 @@
         <!--p class="help-block">{{t "formVersions.eks.helpBlock"}}</p-->
         {{/if}}
     </div>
-    <div class="col span-2">
+    <div class="col span-4">
         <label class="acc-label">
             Number Nodes
         </label>
@@ -167,241 +167,6 @@
     </div>
 </div>
 
-{{/accordion-list-item}}
-
-{{#if (eq step 3)}}
-{{#if (eq vpcSubnetMode "default")}}
-{{save-cancel
-          editing=(eq mode "edit")
-          saveDisabled=canSaveVPC
-          save=(action "setVPCS")
-          cancel=close
-          createLabel="nodeDriver.amazoneks.vpc.nextRancherDefault"
-          savingLabel="nodeDriver.amazoneks.vpc.loadingRancherDefault"
-        }}
-{{else}}
-{{save-cancel
-          editing=(eq mode "edit")
-          saveDisabled=canSaveVPC
-          save=(action "setVPCS")
-          cancel=close
-          createLabel="nodeDriver.amazoneks.vpc.next"
-          savingLabel="nodeDriver.amazoneks.vpc.loading"
-        }}
-{{/if}}
-{{/if}}
-
-{{#if (eq step 4)}}
-{{save-cancel
-        editing=(eq mode "edit")
-        saveDisabled=(lte cluster.doksEngineConfig.subnets.length 0)
-        save=(action "setSubnets")
-        cancel=close
-        createLabel="nodeDriver.amazoneks.subnet.next"
-        savingLabel="nodeDriver.amazoneks.subnet.loading"
-      }}
-{{/if}}
-{{/if}}
-
-{{#if (and (gte step 5) (eq vpcSubnetMode "custom") )}}
-{{#accordion-list-item
-       title=(t "nodeDriver.amazoneks.securityGroup.title")
-       detail=(t "nodeDriver.amazoneks.securityGroup.detail")
-       showExpand=false
-       expandOnInit=true
-       expandAll=al.expandAll
-       expand=(action expandFn)
-    }}
-<div class="row">
-    {{#if (eq step 5)}}
-    <select class="form-control existing-security-groups" multiple="true"
-        onchange={{action "multiSecurityGroupSelect" ""}}>
-        {{#each filteredSecurityGroups as |choice|}}
-        <option value={{choice.GroupId}}
-            selected={{array-includes cluster.doksEngineConfig.securityGroups choice.GroupId}}>
-            {{choice.GroupName}} ({{choice.GroupId}})
-        </option>
-        {{/each}}
-    </select>
-    {{else}}
-    {{#if cluster.doksEngineConfig.securityGroups}}
-    {{#each cluster.doksEngineConfig.securityGroups as |sg|}}
-    <div>{{sg}}</div>
-    {{/each}}
-    {{/if}}
-    {{/if}}
-</div>
-{{/accordion-list-item}}
-
-{{#if (eq step 5)}}
-{{save-cancel
-        editing=(eq mode "edit")
-        saveDisabled=canSaveSG
-        save=(action (mut step) 6)
-        cancel=close
-        createLabel="nodeDriver.amazonec2.securityGroup.next"
-        savingLabel="nodeDriver.amazonec2.securityGroup.loading"
-      }}
-{{/if}}
-{{/if}}
-
-{{#if (eq step 6)}}
-{{#accordion-list-item
-       title=(t "clusterNew.nodes.title")
-       detail=(t "clusterNew.nodes.detail")
-       showExpand=false
-       expandOnInit=true
-       expandAll=al.expandAll
-       expand=(action expandFn)
-    }}
-<div class="row">
-    <div class="col span-6">
-        <label class="acc-label">
-            {{t "nodeDriver.amazonec2.instanceType.label"}}
-        </label>
-        {{#input-or-display
-             editable=(eq mode "new")
-             value=cluster.doksEngineConfig.instanceType
-          }}
-        {{new-select
-              classNames="form-control"
-              value=cluster.doksEngineConfig.instanceType
-              content=instanceTypes
-              optionValuePath="name"
-              optionLabelPath="name"
-              optionGroupPath="group"
-            }}
-        {{/input-or-display}}
-    </div>
-    <div class="col span-6">
-        <label class="acc-label">
-            {{t "nodeDriver.amazoneks.ami.label"}}
-        </label>
-        {{#input-or-display
-             editable=(eq mode "new")
-             value=cluster.doksEngineConfig.ami
-          }}
-        {{input type="text" value=cluster.doksEngineConfig.ami}}
-        {{/input-or-display}}
-        <p class="help-block">
-            {{t "nodeDriver.amazoneks.ami.help"}}
-        </p>
-    </div>
-
-</div>
-<div class="row">
-    <div class="col span-6">
-        <label class="acc-label">
-            {{t "nodeDriver.amazoneks.desired.label"}}
-        </label>
-        {{#input-or-display
-             
-             value=cluster.doksEngineConfig.desiredNodes
-          }}
-        {{input-number value=cluster.doksEngineConfig.desiredNodes min=1}}
-        {{/input-or-display}}
-    </div>
-    <div class="col span-6">
-        <label class="acc-label">
-            {{t "nodeDriver.amazoneks.nodeVolumeSize.label"}}
-        </label>
-        {{#input-or-display
-             editable=(eq mode "new")
-             value=cluster.doksEngineConfig.nodeVolumeSize
-          }}
-        <div class="input-group">
-            {{input-integer
-                min=0
-                value=cluster.doksEngineConfig.nodeVolumeSize
-                classNames="form-control"
-                placeholder=(t "nodeDriver.amazoneks.nodeVolumeSize.placeholder")
-              }}
-            <span class="input-group-addon bg-default">
-                {{t "generic.gigabyte"}}
-            </span>
-        </div>
-        {{/input-or-display}}
-    </div>
-</div>
-<div class="row">
-    <div class="row-same-height row-full-height">
-        <div class="col span-6 col span-height col full-height col-top mb-20">
-            <div class="no-padding-margin full-height">
-                <label class="acc-label" for="aws-eks-key-piar">
-                    {{t "nodeDriver.amazoneks.keyPairs.label"}}
-                    <span class="inline-block">
-                        {{#tooltip-element
-                     type="tooltip-basic"
-                     model=(t "nodeDriver.amazoneks.keyPairs.tooltip" htmlSafe=true)
-                     tooltipTemplate="tooltip-static"
-                     aria-describedby="tooltip-base"
-                     tooltipFor="tooltipPoolCreateAfter"
-                     placement="top"
-                     tagName="div"
-                  }}
-                        <i class="icon icon-help icon-blue"></i>
-                        {{/tooltip-element}}
-                    </span>
-                </label>
-                {{#input-or-display
-                 editable=(eq mode "new")
-                 value=cluster.doksEngineConfig.keyPairName
-              }}
-                {{searchable-select
-                  id="aws-eks-key-piar"
-                  classNames="form-control"
-                  value=cluster.doksEngineConfig.keyPairName
-                  content=filteredKeyPairs
-                  optionValuePath="KeyName"
-                  optionLabelPath="KeyName"
-                  prompt=(t "nodeDriver.amazoneks.keyPairs.prompt")
-                }}
-                {{/input-or-display}}
-            </div>
-        </div>
-        <div class="col span-6 col span-height col full-height col-top mb-20">
-            <div class="no-padding-margin full-height">
-                <label class="acc-label" for="ebs-encryption">
-                    {{t "nodeDriver.amazoneks.encryptEbs.label"}}
-                </label>
-                <div>
-                    {{#input-or-display
-                   editable=(eq mode "new")
-                   value=cluster.doksEngineConfig.ebsEncryption
-                }}
-                    {{input
-                    id="ebs-encryption"
-                    type="checkbox"
-                    checked=cluster.doksEngineConfig.ebsEncryption
-                  }}
-                    {{/input-or-display}}
-                </div>
-                <p class="help-block">
-                    {{t "nodeDriver.amazoneks.encryptEbs.detail"}}
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col span-12">
-        <label class="acc-label pb-5">
-            {{t "nodeDriver.amazoneks.userData.label"}}
-        </label>
-        {{input-text-file
-            accept="text/plain"
-            canChangeName=false
-            classNames="box"
-            minHeight=200
-            placeholder="nodeDriver.amazoneks.userData.placeholder"
-            value=cluster.doksEngineConfig.userData
-            disabled=(not-eq mode "new")
-          }}
-        <p class="help-block">
-            {{t "nodeDriver.amazoneks.userData.help"}}
-        </p>
-    </div>
-</div>
 {{/accordion-list-item}}
 
 {{save-cancel
