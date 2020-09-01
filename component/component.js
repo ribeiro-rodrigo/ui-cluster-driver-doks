@@ -117,7 +117,7 @@ export default Ember.Component.extend(ClusterDriver, {
 
     actions: {
 
-        awsLogin(cb) {
+        digitalOceanLogin(cb) {
             set(this, 'step', 2)
             cb()
         },
