@@ -205,12 +205,9 @@ export default Ember.Component.extend(ClusterDriver, {
             errors.push('Name is required');
         }
 
-        // Add more specific errors
-
-        // Check something and add an error entry if it fails:
-        // if ( parseInt(get(this, 'config.memorySize'), defaultRadix) < defaultBase ) {
-        //   errors.push('Memory Size must be at least 1024 MB');
-        // }
+        if (!get(this, 'config.accessToken') || !get(this, 'config.accessToken').trim()) {
+            errors.push('Token is required')
+        }
 
         // Set the array of errors for display,
         // and return true if saving should continue.
