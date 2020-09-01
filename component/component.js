@@ -73,8 +73,7 @@ export default Ember.Component.extend(ClusterDriver, {
         if (!config) {
             config = this.get('globalStore').createRecord({
                 type: configField,
-                accessKey: null,
-                secretKey: null,
+                accessToken: null,
                 region: 'us-west-2',
                 instanceType: 'm5.large',
                 desiredNodes: 1,
@@ -118,6 +117,12 @@ export default Ember.Component.extend(ClusterDriver, {
     actions: {
 
         digitalOceanLogin(cb) {
+
+            if (!this.validate()) {
+                cb(false)
+                return
+            }
+
             set(this, 'step', 2)
             cb()
         },
