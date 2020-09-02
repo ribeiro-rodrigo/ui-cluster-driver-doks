@@ -79,6 +79,7 @@ export default Ember.Component.extend(ClusterDriver, {
                 desiredNodes: 1,
                 minimumNodes: 1,
                 maximumNodes: 1,
+                nodePoolName: '',
                 kubernetesVersion: this.kubernetesVersionContent.firstObject,
             });
             console.log('store -- ' + Object.isExtensible(config))
