@@ -174,8 +174,6 @@ export default Ember.Component.extend(ClusterDriver, {
     }),
 
     willSave() {
-        // temporary measure put in place for rancher/rancher#24652
-        console.log('caiu aqui')
         const {
             cluster: {
                 eksEngineConfig: { subnets }
