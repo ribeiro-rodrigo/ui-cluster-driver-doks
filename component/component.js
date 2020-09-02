@@ -1,12 +1,8 @@
 /*!!!!!!!!!!!Do not change anything between here (the DRIVERNAME placeholder will be automatically replaced at buildtime)!!!!!!!!!!!*/
 // https://github.com/rancher/ui/blob/master/lib/shared/addon/mixins/cluster-driver.js
 import ClusterDriver from 'shared/mixins/cluster-driver';
-//import AWS from 'aws-sdk'
-import $ from 'jquery';
-import Semver, { minor, coerce } from 'semver';
-import { INSTANCE_TYPES, nameFromResource, tagsFromResource } from 'shared/utils/amazon';
 import C from 'shared/utils/constants';
-import { satisfies, coerceVersion } from 'shared/utils/parse-version';
+
 // do not remove LAYOUT, it is replaced at build time with a base64 representation of the template of the hbs template
 // we do this to avoid converting template to a js file that returns a string and the cors issues that would come along with that
 const LAYOUT;
@@ -21,12 +17,8 @@ const set = Ember.set;
 const setProperties = Ember.setProperties;
 const alias = Ember.computed.alias;
 const service = Ember.inject.service;
-const all = Ember.RSVP.all;
-const isEmpty = Ember.isEmpty;
 const equal = Ember.computed.equal;
 
-const REGIONS = ['us-east-2', 'us-east-1', 'us-west-2', 'ap-east-1', 'ap-south-1', 'ap-northeast-1', 'ap-northeast-2', 'ap-southeast-1', 'ap-southeast-2', 'ca-central-1', 'cn-north-1', 'cn-northwest-1', 'eu-central-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'eu-north-1', 'me-south-1', 'sa-east-1'];
-const RANCHER_GROUP = 'rancher-nodes';
 const VERSIONS = ['1.15', '1.14', '1.13']; // sort newest->oldest so we dont have to run any logic to sort like other provider versions
 
 /*!!!!!!!!!!!GLOBAL CONST END!!!!!!!!!!!*/
@@ -59,7 +51,6 @@ export default Ember.Component.extend(ClusterDriver, {
 
         this._super(...arguments);
         /*!!!!!!!!!!!DO NOT CHANGE END!!!!!!!!!!!*/
-        console.log(Object.isExtensible(this));
         setProperties(this, {
             clients: {},
             allSubnets: []
@@ -67,8 +58,6 @@ export default Ember.Component.extend(ClusterDriver, {
 
         let config = get(this, 'cluster.%%DRIVERNAME%%EngineConfig');
         let configField = get(this, 'configField');
-
-        console.log('antes -- ' + Object.isExtensible(config))
 
         if (!config) {
             config = this.get('globalStore').createRecord({
@@ -82,8 +71,6 @@ export default Ember.Component.extend(ClusterDriver, {
                 nodePoolName: '',
                 kubernetesVersion: this.kubernetesVersionContent.firstObject,
             });
-            console.log('store -- ' + Object.isExtensible(config))
-
             set(this, 'cluster.%%DRIVERNAME%%EngineConfig', config);
         } else {
             if (this.mode === 'edit') {
