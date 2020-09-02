@@ -96,8 +96,6 @@ export default Ember.Component.extend(ClusterDriver, {
                     set(this, 'cluster.%%DRIVERNAME%%EngineConfig.accessKey', null);
                 }
 
-                //console.log('indo para o step 6');
-                //set(this, 'step', 6);
             }
 
         }
@@ -136,20 +134,8 @@ export default Ember.Component.extend(ClusterDriver, {
                 return cb(false)
             }
 
-            /*const {
-                cluster: {
-                    eksEngineConfig: { subnets }
-                }
-            } = this;
-
-            if (isEmpty(subnets)) {
-                set(this, 'cluster.%%DRIVERNAME%%EngineConfig.subnets', []);
-            }
-            console.log(arguments);
-            return this._super(...arguments);*/
-            console.log('chamando save');
-            this.send('driverSave', cb);
-            console.log('chamou save');
+            //this.send('driverSave', cb);
+            cb(false)
         },
         cancel() {
             // probably should not remove this as its what every other driver uses to get back
@@ -176,24 +162,7 @@ export default Ember.Component.extend(ClusterDriver, {
     }),
 
     willSave() {
-        const {
-            cluster: {
-                eksEngineConfig: { subnets }
-            }
-        } = this;
 
-        if (isEmpty(subnets)) {
-            set(this, 'cluster.%%DRIVERNAME%%EngineConfig.subnets', []);
-        }
-        console.log(arguments);
-
-        let config = get(this, 'cluster.%%DRIVERNAME%%EngineConfig');
-        console.log(config);
-
-        return this._super(...arguments);
-        //console.log('chamando save');
-        //this.send('driverSave', cb);
-        //console.log('chamou save');
     },
 
     // Add custom validation beyond what can be done from the config API schema
@@ -214,7 +183,6 @@ export default Ember.Component.extend(ClusterDriver, {
         if (!get(this, 'config.nodePoolName') && step == 3) {
             errors.push('Node pool name is required')
         }
-
 
         // Set the array of errors for display,
         // and return true if saving should continue.
