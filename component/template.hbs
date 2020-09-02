@@ -1,7 +1,7 @@
 {{#accordion-list showExpandAll=false as | al expandFn |}}
 {{#accordion-list-item
-     title="Account Access"
-     detail="Configure the Personal access token"
+     title=(t "clusterNew.doks.access.title")
+     detail=(t 'clusterNew.doks.access.subtitle')
      expandAll=expandAll
      expand=(action expandFn)
      expandOnInit=true
@@ -9,7 +9,7 @@
 <div class="row">
     <div class="col span-3">
         <label class="acc-label">
-            Token
+            {{t "clusterNew.doks.access.tokenField"}}
         </label>
         {{#if (eq step 1)}}
         {{input
@@ -17,11 +17,11 @@
             name="username"
             size="80"
             classNames="form-control"
-            placeholder="Your access token"
+            placeholder=(t 'clusterNew.doks.access.tokenPlaceholder')
             value=cluster.doksEngineConfig.token
           }}
         {{else}}
-        <div class="text-muted text-italic">Provided</div>
+        <div class="text-muted text-italic">{{t "clusterNew.doks.access.tokenProvided"}}</div>
         {{/if}}
     </div>
 </div>
@@ -29,9 +29,7 @@
 {{#if (eq step 1)}}
 <div class="row">
     <div class="span-9">
-        <p class="text-info text-small m-0">Personal access tokens function like a combined name and password for API
-            authentication.
-
+        <p class="text-info text-small m-0">{{t "clusterNew.doks.access.tokenInfo"}}
         </p>
     </div>
 </div>
@@ -43,8 +41,8 @@
       editing=(eq mode "edit")
       save=(action "digitalOceanLogin")
       cancel=close
-      createLabel="nodeDriver.amazoneks.access.next"
-      savingLabel="nodeDriver.amazoneks.access.loading"
+      createLabel="clusterNew.doks.access.next"
+      savingLabel="clusterNew.doks.access.loading"
     }}
 {{/if}}
 

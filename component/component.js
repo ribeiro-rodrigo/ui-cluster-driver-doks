@@ -34,7 +34,14 @@ const languages = {
                     'subtitle': 'Configure the Personal access token',
                     'tokenField': 'Token',
                     'tokenPlaceholder': 'Your access token',
-                    'tokenInfo': 'Personal access tokens function like a combined name and password for API authentication'
+                    'tokenInfo': 'Personal access tokens function like a combined name and password for API authentication',
+                    'tokenProvided': 'Provided',
+                    'next': 'Next: Configure Cluster',
+                    'loading': 'Loading',
+                    'error': {
+                        'requiredName': 'Name is required',
+                        'requiredToken': 'Token is required'
+                    }
                 },
                 'cluster': {
                     'next': 'Next: Select Node Pool',
@@ -50,7 +57,10 @@ const languages = {
                     'nameField': 'Node Pool Name',
                     'namePlaceholder': 'Enter Node Pool Name',
                     'machineTypeField': 'Machine Type',
-                    'numberNodesField': 'Number Nodes'
+                    'numberNodesField': 'Number Nodes',
+                    'error': {
+                        'requiredNodePoolName': 'Node pool name is required',
+                    }
                 }
 
             }
@@ -213,19 +223,22 @@ export default Ember.Component.extend(ClusterDriver, {
     validate() {
         // Get generic API validation errors
         this._super();
+
+        const intl = get(this, 'intl');
+
         var errors = get(this, 'errors') || [];
         if (!get(this, 'cluster.name')) {
-            errors.push('Name is required');
+            errors.push(intl.t('clusterNew.doks.access.error.requiredName'));
         }
 
         if (!get(this, 'config.token') || !get(this, 'config.token').trim()) {
-            errors.push('Token is required')
+            errors.push(intl.t('clusterNew.doks.access.error.requiredName'))
         }
 
         const step = get(this, 'step');
 
         if (!get(this, 'config.nodePoolName') && step == 3) {
-            errors.push('Node pool name is required')
+            errors.push(intl.t('clusterNew.doks.nodePool.error.requiredNodePoolName'))
         }
 
         // Set the array of errors for display,
