@@ -131,9 +131,12 @@ export default Ember.Component.extend(ClusterDriver, {
         },
 
         save(cb) {
-            // temporary measure put in place for rancher/rancher#24652
-            console.log('caiu aqui')
-            const {
+
+            if (!this.validate()) {
+                return cb(false)
+            }
+
+            /*const {
                 cluster: {
                     eksEngineConfig: { subnets }
                 }
@@ -143,10 +146,10 @@ export default Ember.Component.extend(ClusterDriver, {
                 set(this, 'cluster.%%DRIVERNAME%%EngineConfig.subnets', []);
             }
             console.log(arguments);
-            return this._super(...arguments);
-            //console.log('chamando save');
-            //this.send('driverSave', cb);
-            //console.log('chamou save');
+            return this._super(...arguments);*/
+            console.log('chamando save');
+            this.send('driverSave', cb);
+            console.log('chamou save');
         },
         cancel() {
             // probably should not remove this as its what every other driver uses to get back
@@ -205,6 +208,13 @@ export default Ember.Component.extend(ClusterDriver, {
         if (!get(this, 'config.accessToken') || !get(this, 'config.accessToken').trim()) {
             errors.push('Token is required')
         }
+
+        const step = get(this, 'step');
+
+        if (!get(this, 'config.nodePoolName') && step == 3) {
+            errors.push('Node pool name is required')
+        }
+
 
         // Set the array of errors for display,
         // and return true if saving should continue.
