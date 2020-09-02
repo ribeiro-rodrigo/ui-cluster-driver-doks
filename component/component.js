@@ -101,8 +101,6 @@ export default Ember.Component.extend(ClusterDriver, {
             }
 
         }
-
-        console.log('depois -- ' + Object.isExtensible(config))
     },
 
     willDestroyElement() {
