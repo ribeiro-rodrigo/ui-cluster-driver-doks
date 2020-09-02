@@ -167,7 +167,6 @@ export default Ember.Component.extend(ClusterDriver, {
         },
     },
     loadLanguage(lang) {
-        alert(lang)
         const translation = languages[lang] || languages['en-us'];
         const intl = get(this, 'intl');
 
