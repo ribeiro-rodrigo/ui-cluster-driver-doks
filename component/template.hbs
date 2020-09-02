@@ -107,9 +107,9 @@
 {{#if (eq step 2)}}
 {{save-cancel
         editing=(eq mode "edit")
-        save=(action "loadVPS")
+        save=(action "configureNodePool")
         cancel=close
-        createLabel="nodeDriver.amazoneks.role.next"
+        createLabel="'Next: Select Node Pool'"
         savingLabel="nodeDriver.amazoneks.role.loading"
       }}
 {{/if}}

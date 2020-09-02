@@ -123,7 +123,7 @@ export default Ember.Component.extend(ClusterDriver, {
             set(this, 'step', 2)
             cb()
         },
-        loadVPS(cb) {
+        configureNodePool(cb) {
             set(this, 'step', 3)
             cb()
         },
