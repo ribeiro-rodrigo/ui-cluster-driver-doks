@@ -73,7 +73,7 @@ export default Ember.Component.extend(ClusterDriver, {
         if (!config) {
             config = this.get('globalStore').createRecord({
                 type: configField,
-                accessToken: null,
+                token: null,
                 region: 'us-west-2',
                 instanceType: 'm5.large',
                 desiredNodes: 1,
@@ -174,7 +174,7 @@ export default Ember.Component.extend(ClusterDriver, {
             errors.push('Name is required');
         }
 
-        if (!get(this, 'config.accessToken') || !get(this, 'config.accessToken').trim()) {
+        if (!get(this, 'config.token') || !get(this, 'config.token').trim()) {
             errors.push('Token is required')
         }
 
