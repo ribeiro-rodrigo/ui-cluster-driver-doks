@@ -61,7 +61,8 @@ const languages = {
                     'error': {
                         'requiredNodePoolName': 'Node pool name is required',
                     }
-                }
+                },
+                'loading': 'Loading',
 
             }
         }

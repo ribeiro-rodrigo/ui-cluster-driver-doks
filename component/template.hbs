@@ -48,8 +48,8 @@
 
 {{#if (gte step 2)}}
 {{#accordion-list-item
-       title="Cluster Options"
-       detail="Define the region, VPC and kubernetes version of the cluster."
+       title=(t "clusterNew.doks.cluster.title")
+       detail=(t "clusterNew.doks.cluster.subtitle")
        showExpand=false
        expandOnInit=true
        expandAll=al.expandAll
@@ -58,7 +58,7 @@
 <div class="row">
     <div class="col span-6">
         <label class="acc-label">
-            {{t "nodeDriver.amazoneks.kubernetesVersion.label"}}
+            {{t "clusterNew.doks.cluster.kubernetesVersionField"}}
         </label>
         {{new-select
             classNames="form-control"
@@ -72,7 +72,7 @@
 
     <div class="col span-6">
         <label class="acc-label">
-            Region
+            {{t "clusterNew.doks.cluster.regionField"}}
         </label>
         {{new-select
             classNames="form-control"
@@ -88,7 +88,7 @@
 <div class="row">
     <div class="col span-6">
         <label class="acc-label">
-            VPC
+            {{t "clusterNew.doks.cluster.vpcField"}}
         </label>
         {{new-select
             classNames="form-control"
@@ -108,7 +108,7 @@
         save=(action "configureNodePool")
         cancel=close
         createLabel="clusterNew.doks.cluster.next"
-        savingLabel="nodeDriver.amazoneks.role.loading"
+        savingLabel="clusterNew.doks.loading"
       }}
 {{/if}}
 {{/if}}
