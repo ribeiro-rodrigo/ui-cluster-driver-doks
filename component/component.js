@@ -37,7 +37,6 @@ const languages = {
                     'tokenInfo': 'Personal access tokens function like a combined name and password for API authentication',
                     'tokenProvided': 'Provided',
                     'next': 'Next: Configure Cluster',
-                    'loading': 'Loading',
                     'error': {
                         'requiredName': 'Name is required',
                         'requiredToken': 'Token is required'
@@ -63,7 +62,6 @@ const languages = {
                     }
                 },
                 'loading': 'Loading',
-
             }
         }
     }
