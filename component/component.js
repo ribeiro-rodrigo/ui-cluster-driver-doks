@@ -111,7 +111,7 @@ export default Ember.Component.extend(ClusterDriver, {
                 token: null,
                 region: 'us-east-1',
                 vpc: 'default',
-                instanceType: 'm5.large',
+                machineType: 'm5.large',
                 desiredNodes: 1,
                 minimumNodes: 1,
                 maximumNodes: 1,
@@ -226,6 +226,10 @@ export default Ember.Component.extend(ClusterDriver, {
     vpcChoices: computed('vpc', function () {
         let vpc = [{ label: 'default', value: 'default' }]
         return vpc
+    }),
+    machineTypeChoices: computed('machineType', function () {
+        let machineTypes = [{ label: 'm5.large', value: 'type' }]
+        return machineTypes
     }),
 
     willSave() {
