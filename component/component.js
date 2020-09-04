@@ -109,7 +109,7 @@ export default Ember.Component.extend(ClusterDriver, {
             config = this.get('globalStore').createRecord({
                 type: configField,
                 token: null,
-                region: 'us-west-2',
+                region: 'us-east-1',
                 instanceType: 'm5.large',
                 desiredNodes: 1,
                 minimumNodes: 1,
@@ -212,6 +212,15 @@ export default Ember.Component.extend(ClusterDriver, {
         ]
 
         return versionChoices;
+    }),
+
+    regionChoices: computed('regions', function () {
+        let regionsChoices = [
+            {
+                label: 'us-east-1', value: 'N virginia'
+            }
+        ]
+        return regionsChoices
     }),
 
     willSave() {
