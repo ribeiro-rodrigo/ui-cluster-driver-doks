@@ -115,8 +115,8 @@
 
 {{#if (gte step 3)}}
 {{#accordion-list-item
-       title="Node Pool"
-       detail="Choose cluster capacity"
+       title=(t "clusterNew.doks.nodePool.title")
+       detail=(t "clusterNew.doks.nodePool.subtitle")
        showExpand=false
        expandOnInit=true
        expandAll=al.expandAll
@@ -125,14 +125,14 @@
 <div class="row">
     <div class="col span-4">
         <label class="acc-label">
-            Node Pool Name
+            {{t "clusterNew.doks.nodePool.nameField"}}
         </label>
         {{#if (eq step 3)}}
         {{input
             type="text"
             name="username"
             classNames="form-control"
-            placeholder="Enter Node Pool Name"
+            placeholder=(t 'clusterNew.doks.nodePool.namePlaceholder')
             value=cluster.doksEngineConfig.nodePoolName
           }}
         {{else}}
@@ -141,7 +141,7 @@
     </div>
     <div class="col span-4">
         <label class="acc-label">
-            Machine Type
+            {{t "clusterNew.doks.nodePool.machineTypeField"}}
         </label>
         {{new-select
             classNames="form-control"
@@ -154,7 +154,7 @@
     </div>
     <div class="col span-4">
         <label class="acc-label">
-            Number Nodes
+            {{t "clusterNew.doks.nodePool.numberNodesField"}}
         </label>
         {{#input-or-display
              
