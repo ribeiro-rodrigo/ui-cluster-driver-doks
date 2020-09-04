@@ -92,8 +92,8 @@
         </label>
         {{new-select
             classNames="form-control"
-            content=versionChoices
-            value=cluster.doksEngineConfig.kubernetesVersion
+            content=vpcChoices
+            value=cluster.doksEngineConfig.vpc
           }}
         {{#if editing}}
         <!--p class="help-block">{{t "formVersions.eks.helpBlock"}}</p-->

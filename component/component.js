@@ -110,6 +110,7 @@ export default Ember.Component.extend(ClusterDriver, {
                 type: configField,
                 token: null,
                 region: 'us-east-1',
+                vpc: 'default',
                 instanceType: 'm5.large',
                 desiredNodes: 1,
                 minimumNodes: 1,
@@ -221,6 +222,10 @@ export default Ember.Component.extend(ClusterDriver, {
             }
         ]
         return regionsChoices
+    }),
+    vpcChoices: computed('vpc', function () {
+        let vpc = [{ label: 'default', value: 'default' }]
+        return vpc
     }),
 
     willSave() {
