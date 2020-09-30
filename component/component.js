@@ -18,13 +18,29 @@ const setProperties = Ember.setProperties;
 const alias = Ember.computed.alias;
 const service = Ember.inject.service;
 const equal = Ember.computed.equal;
+const next = Ember.run.next;
 
 const VERSIONS = ['1.15', '1.14', '1.13']; // sort newest->oldest so we dont have to run any logic to sort like other provider versions
 
 /*!!!!!!!!!!!GLOBAL CONST END!!!!!!!!!!!*/
 
+
+const languages = {
+    'en-us': {
+        'clusterNew': {
+            'doks': {
+                'cluster': {
+                    'next': 'Next: Select Node Pool 2'
+                }
+            }
+        }
+    }
+}
+
+
 /*!!!!!!!!!!!DO NOT CHANGE START!!!!!!!!!!!*/
 export default Ember.Component.extend(ClusterDriver, {
+    session: service(),
     intl: service(),
     driverName: '%%DRIVERNAME%%',
     configField: '%%DRIVERNAME%%EngineConfig', // 'googleKubernetesEngineConfig'
@@ -51,10 +67,10 @@ export default Ember.Component.extend(ClusterDriver, {
 
         this._super(...arguments);
         /*!!!!!!!!!!!DO NOT CHANGE END!!!!!!!!!!!*/
-        setProperties(this, {
-            clients: {},
-            allSubnets: []
-        })
+
+        const lang = get(this, 'session.language');
+        get(this, 'intl.locale');
+        this.loadLanguage(lang);
 
         let config = get(this, 'cluster.%%DRIVERNAME%%EngineConfig');
         let configField = get(this, 'configField');
@@ -129,6 +145,27 @@ export default Ember.Component.extend(ClusterDriver, {
             get(this, 'router').transitionTo('global-admin.clusters.index');
         },
     },
+    loadLanguage(lang) {
+        alert(lang)
+        const translation = languages[lang] || languages['en-us'];
+        const intl = get(this, 'intl');
+
+        intl.addTranslations(lang, translation);
+        intl.translationsFor(lang);
+        set(this, 'refresh', false);
+        next(() => {
+            set(this, 'refresh', true);
+            set(this, 'lanChanged', +new Date());
+        });
+    },
+
+    languageChanged: observer('intl.locale', function () {
+        const lang = get(this, 'intl.locale');
+
+        if (lang) {
+            this.loadLanguage(lang[0]);
+        }
+    }),
 
     desiredNodesChanged: observer('cluster.%%DRIVERNAME%%EngineConfig.desiredNodes', function () {
         const desiredNodes = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.desiredNodes');
