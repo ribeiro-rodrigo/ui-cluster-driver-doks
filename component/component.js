@@ -29,9 +29,30 @@ const languages = {
     'en-us': {
         'clusterNew': {
             'doks': {
+                'access': {
+                    'title': 'Account Access',
+                    'subtitle': 'Configure the Personal access token',
+                    'tokenField': 'Token',
+                    'tokenPlaceholder': 'Your access token',
+                    'tokenInfo': 'Personal access tokens function like a combined name and password for API authentication'
+                },
                 'cluster': {
-                    'next': 'Next: Select Node Pool 2'
+                    'next': 'Next: Select Node Pool',
+                    'title': 'Cluster Options',
+                    'subtitle': 'Define the region, VPC and Kubernetes version of the cluster',
+                    'kubernetesVersionField': 'Kubernetes Version',
+                    'regionField': 'Region',
+                    'vpcField': 'VPC',
+                },
+                'nodePool': {
+                    'title': 'Node Pool',
+                    'subtitle': 'Choose cluster capacity',
+                    'nameField': 'Node Pool Name',
+                    'namePlaceholder': 'Enter Node Pool Name',
+                    'machineTypeField': 'Machine Type',
+                    'numberNodesField': 'Number Nodes'
                 }
+
             }
         }
     }
