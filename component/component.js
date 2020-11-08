@@ -180,15 +180,30 @@ export default Ember.Component.extend(ClusterDriver, {
             const token = get(this, 'config.token')
             let digitalOceanService = new DigitalOceanService(token)
 
-            digitalOceanService.findOptions()
-                .then(data => {
-                    set(this, 'versions', data.options.versions)
-                    set(this, 'sizes', data.options.sizes)
-                    set(this, 'regions', data.options.regions)
+            Promise.all([
 
-                    set(this, 'step', 2)
-                    cb()
-                })
+                digitalOceanService.findOptions(),
+                digitalOceanService.findVpcs()
+
+            ]).then(data => {
+                data = data.filter(element => !(element instanceof Response))
+                if (data.length != 2) {
+                    cb(false)
+                    return
+                }
+
+                const options = data[0].options
+                const vpcs = data[1].vpcs
+
+                set(this, 'versions', options.versions)
+                set(this, 'sizes', options.sizes)
+                set(this, 'regions', options.regions)
+                set(this, 'vpcs', vpcs)
+
+                set(this, 'step', 2)
+                cb()
+
+            })
         },
         configureNodePool(cb) {
             set(this, 'step', 3)
