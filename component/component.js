@@ -24,6 +24,28 @@ const VERSIONS = ['1.15', '1.14', '1.13']; // sort newest->oldest so we dont hav
 
 /*!!!!!!!!!!!GLOBAL CONST END!!!!!!!!!!!*/
 
+/*!!!!!!!!!!!DIGITAL OCEAN SERVICE !!!!!!!!!!!*/
+
+function DigitalOceanService(token) {
+    const init = {
+        method: 'GET',
+        headers: new Headers({
+            'Authorization': `Bearer ${token}`
+        })
+    }
+
+    let locate = (path) => {
+        return fetch(`https://api.digitalocean.com/v2${path}`, init)
+            .then(response => response.json())
+    }
+
+    this.findOptions = () => locate('/kubernetes/options')
+
+    this.findVpcs = () => locate('/vpcs')
+}
+
+/*!!!!!!!!!!!DIGITAL OCEAN SERVICE END!!!!!!!!!!!*/
+
 
 const languages = {
     'en-us': {
