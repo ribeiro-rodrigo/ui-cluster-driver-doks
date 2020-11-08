@@ -104,6 +104,7 @@ export default Ember.Component.extend(ClusterDriver, {
     defaultK8sVersionRange: alias(`settings.${C.SETTING.VERSION_SYSTEM_K8S_DEFAULT_RANGE}`),
     step: 1,
     errors: [],
+    options: {},
     kubernetesVersionContent: VERSIONS,
     editing: equal('mode', 'edit'),
     config: alias('cluster.%%DRIVERNAME%%EngineConfig'),
@@ -176,8 +177,18 @@ export default Ember.Component.extend(ClusterDriver, {
                 return
             }
 
-            set(this, 'step', 2)
-            cb()
+            const token = get(this, 'config.token')
+            let digitalOceanService = new DigitalOceanService(token)
+
+            digitalOceanService.findOptions()
+                .then(data => {
+                    set(this, 'versions', data.options.versions)
+                    set(this, 'sizes', data.options.sizes)
+                    set(this, 'regions', data.options.regions)
+
+                    set(this, 'step', 2)
+                    cb()
+                })
         },
         configureNodePool(cb) {
             set(this, 'step', 3)
@@ -230,9 +241,15 @@ export default Ember.Component.extend(ClusterDriver, {
     }),
 
     versionChoices: computed('versions', function () {
-        let versionChoices = [
+        let versions = get(this, 'versions')
+
+        let versionChoices = versions.map(version => {
+            return { label: version.kubernetes_version, value: version.slug }
+        })
+
+        /*let versionChoices = [
             { label: "aaa", value: "aaa" }
-        ]
+        ] */
 
         return versionChoices;
     }),
