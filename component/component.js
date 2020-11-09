@@ -132,9 +132,7 @@ export default Ember.Component.extend(ClusterDriver, {
             config = this.get('globalStore').createRecord({
                 type: configField,
                 token: null,
-                region: 'us-east-1',
-                //vpc: 'default',
-                machineType: 'm5.large',
+                vpc: '',
                 desiredNodes: 1,
                 minimumNodes: 1,
                 maximumNodes: 1,
@@ -295,6 +293,7 @@ export default Ember.Component.extend(ClusterDriver, {
             return { label: region.name, value: region.slug }
         })
 
+
         return regionsChoices
     }),
     vpcChoices: computed('cluster.%%DRIVERNAME%%EngineConfig.region', function () {
@@ -306,6 +305,11 @@ export default Ember.Component.extend(ClusterDriver, {
             .map(vpc => {
                 return { label: vpc.name, value: vpc.id }
             })
+
+        if (vpcs.length)
+            set(this, 'cluster.%%DRIVERNAME%%EngineConfig.vpc', vpcs[0].value)
+        else
+            set(this, 'cluster.%%DRIVERNAME%%EngineConfig.vpc', "")
 
         return vpcs
     }),
