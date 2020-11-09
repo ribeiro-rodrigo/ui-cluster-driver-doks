@@ -262,19 +262,17 @@ export default Ember.Component.extend(ClusterDriver, {
             return { label: version.kubernetes_version, value: version.slug }
         })
 
-        /*let versionChoices = [
-            { label: "aaa", value: "aaa" }
-        ] */
-
         return versionChoices;
     }),
 
     regionChoices: computed('regions', function () {
-        let regionsChoices = [
-            {
-                label: 'us-east-1', value: 'N virginia'
-            }
-        ]
+
+        let regions = get(this, 'regions')
+
+        let regionsChoices = regions.map(region => {
+            return { label: region.name, value: region.slug }
+        })
+
         return regionsChoices
     }),
     vpcChoices: computed('vpc', function () {
