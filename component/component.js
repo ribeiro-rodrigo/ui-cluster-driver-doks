@@ -276,8 +276,12 @@ export default Ember.Component.extend(ClusterDriver, {
         return regionsChoices
     }),
     vpcChoices: computed('vpc', function () {
-        let vpc = [{ label: 'default', value: 'default' }]
-        return vpc
+
+        let vpcs = get(this, 'vpcs').map(vpc => {
+            return { label: vpc.name, value: vpc.id }
+        })
+
+        return vpcs
     }),
     machineTypeChoices: computed('machineType', function () {
         let machineTypes = [{ label: 'm5.large', value: 'type' }]
