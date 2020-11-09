@@ -200,6 +200,8 @@ export default Ember.Component.extend(ClusterDriver, {
                 set(this, 'regions', options.regions)
                 set(this, 'vpcs', vpcs)
 
+                set(this, 'cluster.%%DRIVERNAME%%EngineConfig.region', options.regions[0].slug)
+
                 set(this, 'step', 2)
                 cb()
 
@@ -275,11 +277,15 @@ export default Ember.Component.extend(ClusterDriver, {
 
         return regionsChoices
     }),
-    vpcChoices: computed('vpc', function () {
+    vpcChoices: computed('cluster.%%DRIVERNAME%%EngineConfig.region', function () {
 
-        let vpcs = get(this, 'vpcs').map(vpc => {
-            return { label: vpc.name, value: vpc.id }
-        })
+        const regionSlug = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.region')
+
+        let vpcs = get(this, 'vpcs')
+            .filter(vpc => vpc.region == regionSlug)
+            .map(vpc => {
+                return { label: vpc.name, value: vpc.id }
+            })
 
         return vpcs
     }),
