@@ -133,7 +133,7 @@ export default Ember.Component.extend(ClusterDriver, {
                 type: configField,
                 token: null,
                 region: 'us-east-1',
-                vpc: 'default',
+                //vpc: 'default',
                 machineType: 'm5.large',
                 desiredNodes: 1,
                 minimumNodes: 1,
@@ -214,6 +214,24 @@ export default Ember.Component.extend(ClusterDriver, {
 
         save(cb) {
 
+            let desiredNodes = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.desiredNodes');
+            let machineType = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.machineType');
+            let nodePoolName = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.nodePoolName');
+            let region = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.region');
+            let vpc = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.vpc');
+            let kubernetesVersion = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.kubernetesVersion');
+            let token = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.token');
+            let name = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.name');
+
+            console.log(`name ${name}`)
+            console.log(`token ${token}`)
+            console.log(`kubernetesVersion ${kubernetesVersion}`)
+            console.log(`vpc ${vpc}`)
+            console.log(`region ${region}`)
+            console.log(`nodePoolName ${nodePoolName}`)
+            console.log(`machineType ${machineType}`)
+            console.log(`desiredNodes ${desiredNodes}`)
+
             if (!this.validate()) {
                 return cb(false)
             }
@@ -263,6 +281,8 @@ export default Ember.Component.extend(ClusterDriver, {
         let versionChoices = versions.map(version => {
             return { label: version.kubernetes_version, value: version.slug }
         })
+
+        set(this, 'cluster.%%DRIVERNAME%%EngineConfig.kubernetesVersion', versionChoices[0].value)
 
         return versionChoices;
     }),
