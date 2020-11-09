@@ -198,8 +198,6 @@ export default Ember.Component.extend(ClusterDriver, {
                 set(this, 'regions', options.regions)
                 set(this, 'vpcs', vpcs)
 
-                set(this, 'cluster.%%DRIVERNAME%%EngineConfig.region', options.regions[0].slug)
-
                 set(this, 'step', 2)
                 cb()
 
@@ -293,6 +291,7 @@ export default Ember.Component.extend(ClusterDriver, {
             return { label: region.name, value: region.slug }
         })
 
+        set(this, 'cluster.%%DRIVERNAME%%EngineConfig.region', regionsChoices[0].value)
 
         return regionsChoices
     }),
