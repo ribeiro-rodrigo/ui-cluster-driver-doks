@@ -20,7 +20,6 @@ const service = Ember.inject.service;
 const equal = Ember.computed.equal;
 const next = Ember.run.next;
 
-const VERSIONS = ['1.15', '1.14', '1.13']; // sort newest->oldest so we dont have to run any logic to sort like other provider versions
 
 /*!!!!!!!!!!!GLOBAL CONST END!!!!!!!!!!!*/
 
@@ -105,7 +104,6 @@ export default Ember.Component.extend(ClusterDriver, {
     step: 1,
     errors: [],
     options: {},
-    kubernetesVersionContent: VERSIONS,
     editing: equal('mode', 'edit'),
     config: alias('cluster.%%DRIVERNAME%%EngineConfig'),
 
@@ -132,12 +130,9 @@ export default Ember.Component.extend(ClusterDriver, {
             config = this.get('globalStore').createRecord({
                 type: configField,
                 token: null,
-                vpc: '',
-                desiredNodes: 1,
-                minimumNodes: 1,
-                maximumNodes: 1,
-                nodePoolName: '',
-                kubernetesVersion: this.kubernetesVersionContent.firstObject,
+                vpcID: '',
+                nodePoolCount: 1,
+                nodePoolName: ''
             });
             set(this, 'cluster.%%DRIVERNAME%%EngineConfig', config);
         } else {
@@ -216,12 +211,12 @@ export default Ember.Component.extend(ClusterDriver, {
 
             set(this, 'cluster.%%DRIVERNAME%%EngineConfig.name', get(this, 'cluster.name'))
 
-            let desiredNodes = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.desiredNodes');
-            let machineType = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.machineType');
+            let desiredNodes = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.nodePoolCount');
+            let machineType = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.nodePoolSize');
             let nodePoolName = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.nodePoolName');
-            let region = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.region');
-            let vpc = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.vpc');
-            let kubernetesVersion = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.kubernetesVersion');
+            let region = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.regionSlug');
+            let vpc = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.vpcID');
+            let kubernetesVersion = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.versionSlug');
             let token = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.token');
             let name = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.name');
 
@@ -263,15 +258,6 @@ export default Ember.Component.extend(ClusterDriver, {
         }
     }),
 
-    desiredNodesChanged: observer('cluster.%%DRIVERNAME%%EngineConfig.desiredNodes', function () {
-        const desiredNodes = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.desiredNodes');
-        const config = get(this, 'cluster.%%DRIVERNAME%%EngineConfig');
-
-        setProperties(config, {
-            minimumNodes: desiredNodes,
-            maximumNodes: desiredNodes
-        })
-    }),
 
     versionChoices: computed('versions', function () {
         let versions = get(this, 'versions')
@@ -280,7 +266,7 @@ export default Ember.Component.extend(ClusterDriver, {
             return { label: version.kubernetes_version, value: version.slug }
         })
 
-        set(this, 'cluster.%%DRIVERNAME%%EngineConfig.kubernetesVersion', versionChoices[0].value)
+        set(this, 'cluster.%%DRIVERNAME%%EngineConfig.versionSlug', versionChoices[0].value)
 
         return versionChoices;
     }),
@@ -293,13 +279,13 @@ export default Ember.Component.extend(ClusterDriver, {
             return { label: region.name, value: region.slug }
         })
 
-        set(this, 'cluster.%%DRIVERNAME%%EngineConfig.region', regionsChoices[0].value)
+        set(this, 'cluster.%%DRIVERNAME%%EngineConfig.regionSlug', regionsChoices[0].value)
 
         return regionsChoices
     }),
-    vpcChoices: computed('cluster.%%DRIVERNAME%%EngineConfig.region', function () {
+    vpcChoices: computed('cluster.%%DRIVERNAME%%EngineConfig.regionSlug', function () {
 
-        const regionSlug = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.region')
+        const regionSlug = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.regionSlug')
 
         let vpcs = get(this, 'vpcs')
             .filter(vpc => vpc.region == regionSlug)
@@ -308,9 +294,9 @@ export default Ember.Component.extend(ClusterDriver, {
             })
 
         if (vpcs.length)
-            set(this, 'cluster.%%DRIVERNAME%%EngineConfig.vpc', vpcs[0].value)
+            set(this, 'cluster.%%DRIVERNAME%%EngineConfig.vpcID', vpcs[0].value)
         else
-            set(this, 'cluster.%%DRIVERNAME%%EngineConfig.vpc', "")
+            set(this, 'cluster.%%DRIVERNAME%%EngineConfig.vpcID', "")
 
         return vpcs
     }),
@@ -319,7 +305,7 @@ export default Ember.Component.extend(ClusterDriver, {
             return { label: size.name, value: size.slug }
         })
 
-        set(this, 'cluster.%%DRIVERNAME%%EngineConfig.machineType', machineTypes[0].value);
+        set(this, 'cluster.%%DRIVERNAME%%EngineConfig.nodePoolSize', machineTypes[0].value);
 
         return machineTypes
     }),

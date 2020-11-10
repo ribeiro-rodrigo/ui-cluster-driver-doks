@@ -63,7 +63,7 @@
         {{new-select
             classNames="form-control"
             content=versionChoices
-            value=cluster.doksEngineConfig.kubernetesVersion
+            value=cluster.doksEngineConfig.versionSlug
           }}
         {{#if editing}}
         <!--p class="help-block">{{t "formVersions.eks.helpBlock"}}</p-->
@@ -77,7 +77,7 @@
         {{new-select
             classNames="form-control"
             content=regionChoices
-            value=cluster.doksEngineConfig.region
+            value=cluster.doksEngineConfig.regionSlug
           }}
         {{#if editing}}
         <!--p class="help-block">{{t "formVersions.eks.helpBlock"}}</p-->
@@ -93,7 +93,7 @@
         {{new-select
             classNames="form-control"
             content=vpcChoices
-            value=cluster.doksEngineConfig.vpc
+            value=cluster.doksEngineConfig.vpcID
           }}
         {{#if editing}}
         <!--p class="help-block">{{t "formVersions.eks.helpBlock"}}</p-->
@@ -146,7 +146,7 @@
         {{new-select
             classNames="form-control"
             content=machineTypeChoices
-            value=cluster.doksEngineConfig.machineType
+            value=cluster.doksEngineConfig.nodePoolSize
           }}
         {{#if editing}}
         <!--p class="help-block">{{t "formVersions.eks.helpBlock"}}</p-->
@@ -158,9 +158,9 @@
         </label>
         {{#input-or-display
              
-             value=cluster.doksEngineConfig.desiredNodes
+             value=cluster.doksEngineConfig.nodePoolCount
           }}
-        {{input-number value=cluster.doksEngineConfig.desiredNodes min=1}}
+        {{input-number value=cluster.doksEngineConfig.nodePoolCount min=1}}
         {{/input-or-display}}
     </div>
 </div>
