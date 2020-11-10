@@ -317,6 +317,8 @@ export default Ember.Component.extend(ClusterDriver, {
             return { label: size.name, value: size.slug }
         })
 
+        set(this, 'cluster.%%DRIVERNAME%%EngineConfig.machineType', machineTypes[0].value);
+
         return machineTypes
     }),
 
