@@ -210,6 +210,12 @@ export default Ember.Component.extend(ClusterDriver, {
 
         save(cb) {
 
+            if (!this.validate()) {
+                return cb(false)
+            }
+
+            set(this, 'cluster.%%DRIVERNAME%%EngineConfig.name', get(this, 'cluster.name'))
+
             let desiredNodes = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.desiredNodes');
             let machineType = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.machineType');
             let nodePoolName = get(this, 'cluster.%%DRIVERNAME%%EngineConfig.nodePoolName');
@@ -227,10 +233,6 @@ export default Ember.Component.extend(ClusterDriver, {
             console.log(`nodePoolName ${nodePoolName}`)
             console.log(`machineType ${machineType}`)
             console.log(`desiredNodes ${desiredNodes}`)
-
-            if (!this.validate()) {
-                return cb(false)
-            }
 
             //this.send('driverSave', cb);
             cb(false)
